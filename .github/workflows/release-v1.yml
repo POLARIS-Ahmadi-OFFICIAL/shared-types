@@ -1,0 +1,13 @@
+# Manual alignment tag — use: git tag v1.0.0 && git push origin v1.0.0
+name: Release v1.0.0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - run: test "$(node -p "require('./package.json').version")" = "1.0.0"

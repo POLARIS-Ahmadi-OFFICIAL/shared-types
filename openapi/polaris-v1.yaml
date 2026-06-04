@@ -1,0 +1,665 @@
+openapi: 3.1.0
+info:
+  title: POLARIS API
+  version: 1.0.0
+  description: Contract for POLARIS web, mobile, and desktop clients.
+servers:
+  - url: /api/v1
+    description: API v1 prefix (append to backend base URL)
+tags:
+  - name: health
+  - name: experiments
+  - name: dashboard
+  - name: workflows
+  - name: agents
+  - name: watcher
+  - name: mcp
+  - name: settings
+  - name: history
+paths:
+  /health:
+    get:
+      tags: [health]
+      operationId: getHealth
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /experiments:
+    get:
+      tags: [experiments]
+      operationId: listExperiments
+      summary: List experiments for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Experiment list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExperimentListResponse"
+  /experiments/{experimentId}:
+    get:
+      tags: [experiments]
+      operationId: getExperiment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/experimentId"
+      responses:
+        "200":
+          description: Experiment detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /dashboard/summary:
+    get:
+      tags: [dashboard]
+      operationId: getDashboardSummary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /workflows/run:
+    post:
+      tags: [workflows]
+      operationId: runWorkflow
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowRunRequest"
+      responses:
+        "202":
+          description: Workflow accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRunResponse"
+  /workflows/{workflowId}:
+    get:
+      tags: [workflows]
+      operationId: getWorkflow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Workflow status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /agents/hypothesis:
+    post:
+      tags: [agents]
+      operationId: runHypothesisAgent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentRunRequest"
+      responses:
+        "200":
+          description: Agent result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRunResponse"
+  /agents/experiment:
+    post:
+      tags: [agents]
+      operationId: runExperimentAgent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentRunRequest"
+      responses:
+        "200":
+          description: Agent result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRunResponse"
+  /agents/curve-fitting:
+    post:
+      tags: [agents]
+      operationId: runCurveFittingAgent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CurveFittingRunRequest"
+      responses:
+        "200":
+          description: Curve fitting result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRunResponse"
+  /agents/ml:
+    post:
+      tags: [agents]
+      operationId: runMlAgent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentRunRequest"
+      responses:
+        "200":
+          description: Agent result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRunResponse"
+  /agents/analysis:
+    post:
+      tags: [agents]
+      operationId: runAnalysisAgent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentRunRequest"
+      responses:
+        "200":
+          description: Agent result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRunResponse"
+  /watcher/start:
+    post:
+      tags: [watcher]
+      operationId: startWatcher
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WatcherStartRequest"
+      responses:
+        "200":
+          description: Watcher started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatcherStatus"
+  /watcher/stop:
+    post:
+      tags: [watcher]
+      operationId: stopWatcher
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Watcher stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatcherStatus"
+  /watcher/status:
+    get:
+      tags: [watcher]
+      operationId: getWatcherStatus
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Watcher status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatcherStatus"
+  /mcp/orchestrate:
+    post:
+      tags: [mcp]
+      operationId: orchestrateMcp
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/McpOrchestrateRequest"
+      responses:
+        "200":
+          description: Orchestration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/McpOrchestrateResponse"
+  /settings:
+    get:
+      tags: [settings]
+      operationId: getSettings
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppSettings"
+    patch:
+      tags: [settings]
+      operationId: patchSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppSettingsPatch"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppSettings"
+  /history:
+    get:
+      tags: [history]
+      operationId: getHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: agent
+          in: query
+          schema:
+            type: string
+          description: Filter by agent channel (e.g. hypothesis, experiment, all)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 200
+            maximum: 500
+      responses:
+        "200":
+          description: History entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoryListResponse"
+  /session/cache/clear:
+    post:
+      tags: [session]
+      operationId: clearSessionCache
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Session cache cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, message]
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase access token
+  parameters:
+    experimentId:
+      name: experimentId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, version]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        version:
+          type: string
+    ErrorResponse:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          type: string
+        code:
+          type: string
+    SessionContext:
+      type: object
+      properties:
+        experimentId:
+          type: integer
+          format: int64
+        stage:
+          type: string
+        routingMode:
+          type: string
+          enum: [autonomous, manual]
+        hasHypothesis:
+          type: boolean
+        hasExperimentalOutputs:
+          type: boolean
+        hasCurveFittingResults:
+          type: boolean
+        hasAnalysisResults:
+          type: boolean
+        hasGpResults:
+          type: boolean
+    Experiment:
+      type: object
+      required: [id, name, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        stage:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ExperimentListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Experiment"
+    DashboardSummary:
+      type: object
+      properties:
+        experimentId:
+          type: integer
+          format: int64
+        stage:
+          type: string
+        activeWorkflow:
+          type: boolean
+        lastHypothesisPreview:
+          type: string
+        agentCounts:
+          type: object
+          additionalProperties:
+            type: integer
+    WorkflowRunRequest:
+      type: object
+      required: [experimentId]
+      properties:
+        experimentId:
+          type: integer
+          format: int64
+        mode:
+          type: string
+          enum: [autonomous, manual]
+        steps:
+          type: array
+          items:
+            type: string
+    WorkflowRunResponse:
+      type: object
+      required: [workflowId, status]
+      properties:
+        workflowId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+    WorkflowStatus:
+      type: object
+      required: [workflowId, status]
+      properties:
+        workflowId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        currentStep:
+          type: string
+        error:
+          type: string
+    AgentRunRequest:
+      type: object
+      properties:
+        experimentId:
+          type: integer
+          format: int64
+        payload:
+          type: object
+          additionalProperties: true
+        sessionContext:
+          $ref: "#/components/schemas/SessionContext"
+    CurveFittingRunRequest:
+      type: object
+      properties:
+        experimentId:
+          type: integer
+          format: int64
+        dataFile:
+          type: string
+          format: binary
+        compositionFile:
+          type: string
+          format: binary
+        parameters:
+          type: object
+          additionalProperties: true
+    AgentRunResponse:
+      type: object
+      required: [agent, status]
+      properties:
+        agent:
+          type: string
+        status:
+          type: string
+          enum: [success, error, skipped]
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        nextAgent:
+          type: string
+    WatcherStartRequest:
+      type: object
+      properties:
+        directory:
+          type: string
+        resultsDir:
+          type: string
+        port:
+          type: integer
+          default: 8000
+        experimentId:
+          type: integer
+          format: int64
+    WatcherStatus:
+      type: object
+      required: [running]
+      properties:
+        running:
+          type: boolean
+        directory:
+          type: string
+        port:
+          type: integer
+        pid:
+          type: integer
+        message:
+          type: string
+    McpOrchestrateRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+        experimentId:
+          type: integer
+          format: int64
+        requireHypothesisGate:
+          type: boolean
+          default: true
+    McpOrchestrateResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        hypothesisGate:
+          type: object
+          additionalProperties: true
+        literature:
+          type: object
+          additionalProperties: true
+        traceId:
+          type: string
+    AppSettings:
+      type: object
+      properties:
+        llmProvider:
+          type: string
+        llmModel:
+          type: string
+        qwenBaseUrl:
+          type: string
+        routingMode:
+          type: string
+        maxHypothesisRounds:
+          type: integer
+        watcherDirectory:
+          type: string
+        watcherResultsDir:
+          type: string
+        watcherEnabled:
+          type: boolean
+        experimentalMode:
+          type: boolean
+    AppSettingsPatch:
+      type: object
+      properties:
+        llmProvider:
+          type: string
+        llmModel:
+          type: string
+        qwenBaseUrl:
+          type: string
+        routingMode:
+          type: string
+        maxHypothesisRounds:
+          type: integer
+        watcherDirectory:
+          type: string
+        watcherResultsDir:
+          type: string
+        watcherEnabled:
+          type: boolean
+        experimentalMode:
+          type: boolean
+    HistoryEntry:
+      type: object
+      required: [id, timestamp, eventType]
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        eventType:
+          type: string
+        agent:
+          type: string
+        component:
+          type: string
+        role:
+          type: string
+        summary:
+          type: string
+        experimentId:
+          type: integer
+          format: int64
+    HistoryListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoryEntry"

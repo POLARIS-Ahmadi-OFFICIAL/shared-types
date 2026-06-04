@@ -1,0 +1,33 @@
+{
+  "name": "@polaris/shared-types",
+  "version": "1.0.0",
+  "description": "OpenAPI contract and generated TypeScript types for POLARIS",
+  "license": "UNLICENSED",
+  "private": false,
+  "type": "module",
+  "files": [
+    "dist",
+    "openapi",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./openapi": "./openapi/polaris-v1.yaml"
+  },
+  "scripts": {
+    "build": "npm run codegen && tsc -p tsconfig.build.json",
+    "codegen": "openapi-typescript openapi/polaris-v1.yaml -o src/generated/api.ts",
+    "lint:openapi": "spectral lint openapi/polaris-v1.yaml",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.15.0",
+    "openapi-typescript": "^7.10.1",
+    "typescript": "^5.9.3"
+  }
+}
