@@ -498,6 +498,28 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           description: A run is already in progress for this library
+    get:
+      tags: [phase-mapper]
+      operationId: listPhaseMapperLibraryRuns
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: library_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Run history for a library, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PhaseMapperRun"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}:
     get:
       tags: [phase-mapper]
@@ -556,6 +578,146 @@ paths:
                 type: array
                 items:
                   type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/predictions:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperPredictions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Model predictions for every well in this run
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/xrd-recommendations:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperXrdRecommendations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recommended next wells for XRD measurement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/remeasurement:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperRemeasurement
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Optical remeasurement priority recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/optical-spectra:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperOpticalSpectra
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: well
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Long-format optical spectra, optionally filtered to one well
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/heatmaps:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperHeatmaps
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Per-well metrics merged from this run's output files, for heatmap rendering
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperHeatmaps"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/download:
+    get:
+      tags: [phase-mapper]
+      operationId: downloadPhaseMapperRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: ZIP archive of this run's output files
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
         "404":
           $ref: "#/components/responses/NotFound"
 components:
@@ -927,3 +1089,15 @@ components:
         completed_at:
           type: string
           nullable: true
+    PhaseMapperHeatmaps:
+      type: object
+      required: [columns, wells]
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+        wells:
+          type: array
+          items:
+            type: object

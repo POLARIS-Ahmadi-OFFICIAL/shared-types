@@ -349,7 +349,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["listPhaseMapperLibraryRuns"];
         put?: never;
         post: operations["startPhaseMapperRun"];
         delete?: never;
@@ -382,6 +382,102 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getPhaseMapperReads"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperPredictions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/xrd-recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperXrdRecommendations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/remeasurement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperRemeasurement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/optical-spectra": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperOpticalSpectra"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/heatmaps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperHeatmaps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["downloadPhaseMapperRun"];
         put?: never;
         post?: never;
         delete?: never;
@@ -579,6 +675,10 @@ export interface components {
             frozen: boolean;
             created_at: string;
             completed_at: string | null;
+        };
+        PhaseMapperHeatmaps: {
+            columns: string[];
+            wells: Record<string, never>[];
         };
     };
     responses: {
@@ -1162,6 +1262,29 @@ export interface operations {
             404: components["responses"]["NotFound"];
         };
     };
+    listPhaseMapperLibraryRuns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                library_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Run history for a library, newest first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperRun"][];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
     startPhaseMapperRun: {
         parameters: {
             query?: never;
@@ -1254,6 +1377,146 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperPredictions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Model predictions for every well in this run */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperXrdRecommendations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recommended next wells for XRD measurement */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperRemeasurement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Optical remeasurement priority recommendations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperOpticalSpectra: {
+        parameters: {
+            query?: {
+                well?: string;
+            };
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Long-format optical spectra, optionally filtered to one well */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperHeatmaps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-well metrics merged from this run's output files, for heatmap rendering */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperHeatmaps"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    downloadPhaseMapperRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ZIP archive of this run's output files */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
                 };
             };
             404: components["responses"]["NotFound"];
