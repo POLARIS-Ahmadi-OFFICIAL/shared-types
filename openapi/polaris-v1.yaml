@@ -878,7 +878,19 @@ components:
             type: string
     PhaseMapperRun:
       type: object
-      required: [id, library_id, status, dir_path, frozen, created_at]
+      required:
+        [
+          id,
+          library_id,
+          status,
+          dir_path,
+          job_pid,
+          return_code,
+          error_message,
+          frozen,
+          created_at,
+          completed_at,
+        ]
       properties:
         id:
           type: integer

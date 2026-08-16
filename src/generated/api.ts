@@ -575,12 +575,12 @@ export interface components {
             /** @enum {string} */
             status: "running" | "succeeded" | "failed";
             dir_path: string;
-            job_pid?: number | null;
-            return_code?: number | null;
-            error_message?: string;
+            job_pid: number | null;
+            return_code: number | null;
+            error_message: string;
             frozen: boolean;
             created_at: string;
-            completed_at?: string | null;
+            completed_at: string | null;
         };
     };
     responses: {
