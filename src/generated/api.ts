@@ -294,6 +294,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/phase-mapper/libraries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPhaseMapperLibraries"];
+        put?: never;
+        post: operations["createPhaseMapperLibrary"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/libraries/{library_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperLibrary"];
+        put?: never;
+        post?: never;
+        delete: operations["deletePhaseMapperLibrary"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/libraries/{library_id}/uploads/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["uploadPhaseMapperFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/libraries/{library_id}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["startPhaseMapperRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/phase-mapper/runs/{run_id}/reads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPhaseMapperReads"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -459,6 +555,32 @@ export interface components {
         };
         HistoryListResponse: {
             items: components["schemas"]["HistoryEntry"][];
+        };
+        PhaseMapperLibrary: {
+            id: number;
+            user_id: string;
+            name: string;
+            slug: string;
+            composition_profile: string;
+            created_at: string;
+            updated_at: string;
+        };
+        PhaseMapperUploadResult: {
+            path: string;
+            warnings: string[];
+        };
+        PhaseMapperRun: {
+            id: number;
+            library_id: number;
+            /** @enum {string} */
+            status: "running" | "succeeded" | "failed";
+            dir_path: string;
+            job_pid?: number | null;
+            return_code?: number | null;
+            error_message?: string;
+            frozen: boolean;
+            created_at: string;
+            completed_at?: string | null;
         };
     };
     responses: {
@@ -911,6 +1033,211 @@ export interface operations {
                     };
                 };
             };
+        };
+    };
+    listPhaseMapperLibraries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Libraries for the current user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperLibrary"][];
+                };
+            };
+        };
+    };
+    createPhaseMapperLibrary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    composition_profile?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created library */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperLibrary"];
+                };
+            };
+        };
+    };
+    getPhaseMapperLibrary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                library_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A library */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperLibrary"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    deletePhaseMapperLibrary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                library_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    uploadPhaseMapperFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                library_id: number;
+                kind: "composition" | "plate_reader" | "raw_xrd" | "xrd_labels_reviewed";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Upload accepted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperUploadResult"];
+                };
+            };
+            /** @description Invalid file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    startPhaseMapperRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                library_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Run started */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperRun"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+            /** @description A run is already in progress for this library */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getPhaseMapperRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Run status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhaseMapperRun"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getPhaseMapperReads: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Parsed plate-reader read assignments for this run */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            404: components["responses"]["NotFound"];
         };
     };
 }

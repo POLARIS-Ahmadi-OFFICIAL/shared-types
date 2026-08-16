@@ -16,6 +16,7 @@ tags:
   - name: mcp
   - name: settings
   - name: history
+  - name: phase-mapper
 paths:
   /health:
     get:
@@ -358,6 +359,189 @@ paths:
                     type: string
                   message:
                     type: string
+  /phase-mapper/libraries:
+    post:
+      tags: [phase-mapper]
+      operationId: createPhaseMapperLibrary
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                composition_profile:
+                  type: string
+      responses:
+        "200":
+          description: Created library
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperLibrary"
+    get:
+      tags: [phase-mapper]
+      operationId: listPhaseMapperLibraries
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Libraries for the current user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PhaseMapperLibrary"
+  /phase-mapper/libraries/{library_id}:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperLibrary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: library_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A library
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperLibrary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [phase-mapper]
+      operationId: deletePhaseMapperLibrary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: library_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/libraries/{library_id}/uploads/{kind}:
+    post:
+      tags: [phase-mapper]
+      operationId: uploadPhaseMapperFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: library_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: kind
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [composition, plate_reader, raw_xrd, xrd_labels_reviewed]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Upload accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperUploadResult"
+        "400":
+          description: Invalid file
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/libraries/{library_id}/runs:
+    post:
+      tags: [phase-mapper]
+      operationId: startPhaseMapperRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: library_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Run started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperRun"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: A run is already in progress for this library
+  /phase-mapper/runs/{run_id}:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhaseMapperRun"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /phase-mapper/runs/{run_id}/reads:
+    get:
+      tags: [phase-mapper]
+      operationId: getPhaseMapperReads
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Parsed plate-reader read assignments for this run
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
 components:
   securitySchemes:
     bearerAuth:
@@ -663,3 +847,60 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HistoryEntry"
+    PhaseMapperLibrary:
+      type: object
+      required:
+        [id, user_id, name, slug, composition_profile, created_at, updated_at]
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        composition_profile:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    PhaseMapperUploadResult:
+      type: object
+      required: [path, warnings]
+      properties:
+        path:
+          type: string
+        warnings:
+          type: array
+          items:
+            type: string
+    PhaseMapperRun:
+      type: object
+      required: [id, library_id, status, dir_path, frozen, created_at]
+      properties:
+        id:
+          type: integer
+        library_id:
+          type: integer
+        status:
+          type: string
+          enum: [running, succeeded, failed]
+        dir_path:
+          type: string
+        job_pid:
+          type: integer
+          nullable: true
+        return_code:
+          type: integer
+          nullable: true
+        error_message:
+          type: string
+        frozen:
+          type: boolean
+        created_at:
+          type: string
+        completed_at:
+          type: string
+          nullable: true
