@@ -368,7 +368,7 @@ export interface paths {
         get: operations["getPhaseMapperRun"];
         put?: never;
         post?: never;
-        delete?: never;
+        delete: operations["deletePhaseMapperRun"];
         options?: never;
         head?: never;
         patch?: never;
@@ -566,7 +566,6 @@ export interface components {
             updated_at: string;
         };
         PhaseMapperUploadResult: {
-            path: string;
             warnings: string[];
         };
         PhaseMapperRun: {
@@ -574,7 +573,6 @@ export interface components {
             library_id: number;
             /** @enum {string} */
             status: "running" | "succeeded" | "failed";
-            dir_path: string;
             job_pid: number | null;
             return_code: number | null;
             error_message: string;
@@ -1213,6 +1211,27 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PhaseMapperRun"];
                 };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    deletePhaseMapperRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             404: components["responses"]["NotFound"];
         };

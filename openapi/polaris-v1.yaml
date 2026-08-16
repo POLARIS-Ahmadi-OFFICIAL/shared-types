@@ -519,6 +519,22 @@ paths:
                 $ref: "#/components/schemas/PhaseMapperRun"
         "404":
           $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [phase-mapper]
+      operationId: deletePhaseMapperRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/reads:
     get:
       tags: [phase-mapper]
@@ -868,10 +884,8 @@ components:
           type: string
     PhaseMapperUploadResult:
       type: object
-      required: [path, warnings]
+      required: [warnings]
       properties:
-        path:
-          type: string
         warnings:
           type: array
           items:
@@ -883,7 +897,6 @@ components:
           id,
           library_id,
           status,
-          dir_path,
           job_pid,
           return_code,
           error_message,
@@ -899,8 +912,6 @@ components:
         status:
           type: string
           enum: [running, succeeded, failed]
-        dir_path:
-          type: string
         job_pid:
           type: integer
           nullable: true
