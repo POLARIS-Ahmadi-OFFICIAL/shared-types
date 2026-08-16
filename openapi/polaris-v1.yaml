@@ -578,6 +578,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         "404":
           $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/predictions:
@@ -601,6 +602,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         "404":
           $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/xrd-recommendations:
@@ -624,6 +626,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         "404":
           $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/remeasurement:
@@ -647,6 +650,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         "404":
           $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/optical-spectra:
@@ -675,6 +679,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         "404":
           $ref: "#/components/responses/NotFound"
   /phase-mapper/runs/{run_id}/heatmaps:
@@ -1101,3 +1106,4 @@ components:
           type: array
           items:
             type: object
+            additionalProperties: true

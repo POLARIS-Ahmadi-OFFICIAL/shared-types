@@ -678,7 +678,9 @@ export interface components {
         };
         PhaseMapperHeatmaps: {
             columns: string[];
-            wells: Record<string, never>[];
+            wells: {
+                [key: string]: unknown;
+            }[];
         };
     };
     responses: {
@@ -1376,7 +1378,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -1399,7 +1403,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -1422,7 +1428,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -1445,7 +1453,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -1470,7 +1480,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             404: components["responses"]["NotFound"];
